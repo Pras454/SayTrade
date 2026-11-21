@@ -79,17 +79,29 @@ npm test
 | Gas price | ~500 gwei (stable) |
 | Deploy cost | **≈ 1.40 HSK** (2,801,350 gas × 500 gwei, from `forge script` dry-run; contract 8,077 bytes) |
 
+## Live on mainnet (updated 21 Nov 2026 ~08:15 WIB, all values read on-chain)
+
+| Item | Value |
+|---|---|
+| StrategyVault | [`0xe210a5880792Ae2e2E232Cc1bA219ee44792b19D`](https://hsk.blockscout.com/address/0xe210a5880792Ae2e2E232Cc1bA219ee44792b19D) — Sourcify **exact_match**, deployed 21 Nov ~04:37 WIB ([deploy tx](https://hsk.blockscout.com/tx/0xe5d88e9e74c73f278952f33981d432cf9d9f3f200456060d433b98fb3a9e1737)) |
+| Funding | 3 WHSK + 0.2446 USDT, daily-loss baseline anchored 21 Nov ~04:53 WIB |
+| First live trade | **BUY 0.4877 WHSK for 0.04 USDT**, 21 Nov ~04:57 WIB — [tx `0xe3754a58…`](https://hsk.blockscout.com/tx/0xe3754a586b17c82dc41359348360e6dd1e59cf46694f6cb0a7c73c0ee9ae8f59), `TradeExecuted` emitted, status 1 |
+| Vault value now | **$0.489267** (`vaultValueUsdt()`), day-start $0.48993 → **−0.14% today** (cap: −5%/day) |
+| Vault holdings now | 3.4877 WHSK + 0.204603 USDT · not paused · agent key active |
+| Live agent loop | Running every 5 min since 21 Nov 05:02 WIB — **39 runs, 39 HOLD, 0 failures**. No loop trade yet: spot $0.0816 ≈ TWAP $0.0816, flat all morning (buy needs a 2% dip, sell a 3% rise). The loop trades autonomously the moment a real signal appears. |
+| Live strategy | Buy on 2% dip vs 1h TWAP · sell on 3% rise · max 0.5 HSK/trade · 5%/day loss cap · 5 min cooldown · 0.5% execution slippage |
+
 ## Tests
 
 ```
 contracts:  forge test                                    # 19 unit tests (mocked pool/router)
             forge test --fork-url https://mainnet.hsk.xyz  # + 5 fork tests incl. REAL swaps
                                                             #   through the live router on a local fork
-agent:      npm test                                      # 30 tests (parser + evaluator)
+agent:      npm test                                      # 31 tests (parser + evaluator)
             npx tsc --noEmit                              # clean
 ```
 
-**Results (21 Nov 2026): 19/19 unit + 5/5 fork + 30/30 agent — all passing.**
+**Results (21 Nov 2026): 19/19 unit + 5/5 fork + 31/31 agent — all passing.**
 
 Unit coverage includes: oversize buy/sell reverts, slippage-floor revert,
 bad-execution-price revert, cooldown enforcement, daily-loss-cap block +
